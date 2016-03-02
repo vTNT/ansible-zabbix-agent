@@ -1,0 +1,7 @@
+---
+# defaults file for agent
+zabbix_version: 2.2
+
+zabbix_update_cache_valid_time: 3600
+# zabbix_agentd_conf parameters
+zabbix_conf_server_ip: 10.10.10.10

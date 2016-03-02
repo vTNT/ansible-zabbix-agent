@@ -1,0 +1,37 @@
+---
+# tasks file for agent
+
+- name: "set up zabbix ubuntu repo"
+  apt_repository: repo="deb http://repo.zabbix.com/zabbix/{{ zabbix_version }}/ubuntu/ {{ ansible_distribution_release }} main"
+                  state=present
+
+- name: "set up zabbix ubuntu src repo"
+  apt_repository: repo="deb-src http://repo.zabbix.com/zabbix/{{ zabbix_version }}/ubuntu/ {{ ansible_distribution_release }} main"
+                  state=present
+
+- name: "Install gpg key"
+  apt_key: id=79EA5ED4
+           url=http://repo.zabbix.com/zabbix-official-repo.key
+
+- name: "Install zabbix-agent package"
+  apt: pkg=zabbix-agent
+       state=present
+       update_cache=yes
+       cache_valid_time="{{ zabbix_update_cache_valid_time }}"
+
+- name: Create script directory
+  file:
+    state=directory
+    dest=/etc/zabbix/script
+    owner=zabbix
+    group=zabbix
+    mode=0644
+
+- name: "Write zabbix-agent config file"
+  template: src=zabbix_agentd.conf.j2
+            dest=/etc/zabbix/zabbix_agentd.conf
+            owner=zabbix
+            group=zabbix
+            mode=0644
+  notify: restart zabbix-agent
+
